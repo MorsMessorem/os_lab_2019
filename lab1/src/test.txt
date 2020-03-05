@@ -1,0 +1,14 @@
+cd ./os_lab/lab1/src
+1
+./background.sh &
+cat ./test.txt
+clear
+wc -m ./test.txt
+2
+cat ./cake_rhymes.txt | grep -i "cake" > with_cake.txt
+rm ./with_cake.txt > /dev/null
+3
+chmod ugo+x hello.sh
+./hello.sh
+./Time.sh
+4
