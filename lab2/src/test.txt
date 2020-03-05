@@ -1,0 +1,20 @@
+cd ./os_lab/lab2/src
+1
+cd ./swap
+gcc ./main.c ./swap.c -o main.o && ./main.out
+2
+cd ../revert_string
+gcc ./main.c ./revert_string.c -o main.out && ./main.out string
+3
+gcc -c main.c -o main.out
+gcc -c -fPIC revert_string.c -o revert_string.o
+
+ar rcs librev_st.a revert_string.o
+gcc main.out -L. -lrev_st -o st_lib
+./st_lib string
+
+gcc -shared revert_string.o -o librev_sh.so
+gcc main.out -L. -lrev_sh -o sh_lib
+./sh_lib string
+4
+gcc -c tests.c -o tests.out
