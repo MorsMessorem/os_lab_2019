@@ -12,3 +12,4 @@ chmod ugo+x hello.sh
 ./hello.sh
 ./Time.sh
 4
+./random.sh && ./average.sh $(cat numbers.txt)
