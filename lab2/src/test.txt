@@ -1,9 +1,7 @@
 cd ./os_lab/lab2/src
 1
-cd ./swap
 gcc ./main.c ./swap.c -o main.out && ./main.out
 2
-cd ../revert_string
 gcc ./main.c ./revert_string.c -o main.out && ./main.out string
 3
 gcc -c main.c -o main.out
