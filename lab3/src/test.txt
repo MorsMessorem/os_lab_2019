@@ -4,9 +4,10 @@ find_min_max.c
 gcc sequential_min_max.c find_min_max.c utils.c -o min_max.out && ./min_max.out 1 2
 //seed  arr_size
 2
-
+gcc parallel_min_max.c find_min_max.c utils.c -o parallel.out && ./parallel.out --seed 1 --array_size 5 --pnum 1 --by_files
 3
-
+gcc parallel_min_max.c find_min_max.c utils.c -o parallel.out && ./parallel.out --seed 13 --array_size 5 --pnum 1
 4
+make -f makefile
 
 5
