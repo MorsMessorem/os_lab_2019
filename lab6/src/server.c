@@ -12,32 +12,18 @@
 #include <sys/types.h>
 
 #include "pthread.h"
-
-struct FactorialArgs {
-  uint64_t begin;
-  uint64_t end;
-  uint64_t mod;
-};
-
-uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
-  uint64_t result = 0;
-  a = a % mod;
-  while (b > 0) {
-    if (b % 2 == 1)
-      result = (result + a) % mod;
-    a = (a * 2) % mod;
-    b /= 2;
-  }
-
-  return result % mod;
-}
+#include "factorial.h"
 
 uint64_t Factorial(const struct FactorialArgs *args) {
-  uint64_t ans = 1;
-
-  // TODO: your code here
-
-  return ans;
+    int fac = 1;
+    // TODO: your code here
+    int i;
+    for ( i = args->begin; i <= args->end; i++)
+    {
+        fac*=i;
+        fac%=args->mod;
+    }
+    return fac;
 }
 
 void *ThreadFactorial(void *args) {
@@ -46,6 +32,7 @@ void *ThreadFactorial(void *args) {
 }
 
 int main(int argc, char **argv) {
+  uint32_t i;
   int tnum = -1;
   int port = -1;
 
@@ -67,10 +54,14 @@ int main(int argc, char **argv) {
       switch (option_index) {
       case 0:
         port = atoi(optarg);
+        if (!(port>0))
+        return 0;
         // TODO: your code here
         break;
       case 1:
         tnum = atoi(optarg);
+        if (!(tnum>0))
+        return 0;
         // TODO: your code here
         break;
       default:
@@ -157,7 +148,7 @@ int main(int argc, char **argv) {
       fprintf(stdout, "Receive: %llu %llu %llu\n", begin, end, mod);
 
       struct FactorialArgs args[tnum];
-      for (uint32_t i = 0; i < tnum; i++) {
+      for (i = 0; i < tnum; i++) {
         // TODO: parallel somehow
         args[i].begin = 1;
         args[i].end = 1;
@@ -171,7 +162,7 @@ int main(int argc, char **argv) {
       }
 
       uint64_t total = 1;
-      for (uint32_t i = 0; i < tnum; i++) {
+      for (i = 0; i < tnum; i++) {
         uint64_t result = 0;
         pthread_join(threads[i], (void **)&result);
         total = MultModulo(total, result, mod);

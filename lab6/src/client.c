@@ -12,23 +12,12 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
+#include "factorial.h"
+
 struct Server {
   char ip[255];
   int port;
 };
-
-uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod) {
-  uint64_t result = 0;
-  a = a % mod;
-  while (b > 0) {
-    if (b % 2 == 1)
-      result = (result + a) % mod;
-    a = (a * 2) % mod;
-    b /= 2;
-  }
-
-  return result % mod;
-}
 
 bool ConvertStringToUI64(const char *str, uint64_t *val) {
   char *end = NULL;
@@ -46,6 +35,7 @@ bool ConvertStringToUI64(const char *str, uint64_t *val) {
 }
 
 int main(int argc, char **argv) {
+  int i;
   uint64_t k = -1;
   uint64_t mod = -1;
   char servers[255] = {'\0'}; // TODO: explain why 255
@@ -69,15 +59,20 @@ int main(int argc, char **argv) {
       switch (option_index) {
       case 0:
         ConvertStringToUI64(optarg, &k);
+        if (!(k>0))
+        return 0;
         // TODO: your code here
         break;
       case 1:
         ConvertStringToUI64(optarg, &mod);
+        if (!(mod>1))
+        return 0;
         // TODO: your code here
         break;
       case 2:
         // TODO: your code here
         memcpy(servers, optarg, strlen(optarg));
+        // ???
         break;
       default:
         printf("Index %d is out of options\n", option_index);
@@ -99,14 +94,16 @@ int main(int argc, char **argv) {
   }
 
   // TODO: for one server here, rewrite with servers from file
+  // read from file
   unsigned int servers_num = 1;
   struct Server *to = malloc(sizeof(struct Server) * servers_num);
   // TODO: delete this and parallel work between servers
+
   to[0].port = 20001;
   memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
 
   // TODO: work continiously, rewrite to make parallel
-  for (int i = 0; i < servers_num; i++) {
+  for (i = 0; i < servers_num; i++) {
     struct hostent *hostname = gethostbyname(to[i].ip);
     if (hostname == NULL) {
       fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
@@ -131,13 +128,21 @@ int main(int argc, char **argv) {
 
     // TODO: for one server
     // parallel between servers
-    uint64_t begin = 1;
-    uint64_t end = k;
+    struct FactorialArgs args; 
+    
+    for (i=0;i<servers_num;i++)
+    {
+    args.begin = 1;
+    args.end = k;
+    args.mod = mod;
+    }
 
+    //
+    
     char task[sizeof(uint64_t) * 3];
-    memcpy(task, &begin, sizeof(uint64_t));
-    memcpy(task + sizeof(uint64_t), &end, sizeof(uint64_t));
-    memcpy(task + 2 * sizeof(uint64_t), &mod, sizeof(uint64_t));
+    memcpy(task, &args.begin, sizeof(uint64_t));
+    memcpy(task + sizeof(uint64_t), &args.end, sizeof(uint64_t));
+    memcpy(task + 2 * sizeof(uint64_t), &args.mod, sizeof(uint64_t));
 
     if (send(sck, task, sizeof(task), 0) < 0) {
       fprintf(stderr, "Send failed\n");
