@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
+//lib
   struct sockaddr_in server;
   server.sin_family = AF_INET;
   server.sin_port = htons((uint16_t)port);
@@ -150,8 +151,9 @@ int main(int argc, char **argv) {
       struct FactorialArgs args[tnum];
       for (i = 0; i < tnum; i++) {
         // TODO: parallel somehow
-        args[i].begin = 1;
-        args[i].end = 1;
+        int block = (double)(end - begin + 1)/tnum;
+        args[i].begin = block*(i)+begin;
+        args[i].end = block*(i+1);
         args[i].mod = mod;
 
         if (pthread_create(&threads[i], NULL, ThreadFactorial,
@@ -169,7 +171,7 @@ int main(int argc, char **argv) {
       }
 
       printf("Total: %llu\n", total);
-
+        
       char buffer[sizeof(total)];
       memcpy(buffer, &total, sizeof(total));
       err = send(client_fd, buffer, sizeof(total), 0);

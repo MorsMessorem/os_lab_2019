@@ -15,3 +15,4 @@ lib: factorial.c
 
 clean: 
 	rm -r *.o *.a *.out -f
+	clear
