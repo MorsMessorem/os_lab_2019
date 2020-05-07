@@ -88,11 +88,7 @@ int main(int argc, char **argv) {
     return 1;
   }
 
-//lib
-  struct sockaddr_in server;
-  server.sin_family = AF_INET;
-  server.sin_port = htons((uint16_t)port);
-  server.sin_addr.s_addr = htonl(INADDR_ANY);
+  struct sockaddr_in server = create_sockaddr(port, htonl(INADDR_ANY));
 
   int opt_val = 1;
   setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
@@ -172,8 +168,9 @@ int main(int argc, char **argv) {
 
       printf("Total: %llu\n", total);
         
-      char buffer[sizeof(total)];
-      memcpy(buffer, &total, sizeof(total));
+      char buffer[256];//sizeof(total)];
+      sprintf(buffer, "%d", total);
+      //memcpy(buffer, &total, sizeof(total));
       err = send(client_fd, buffer, sizeof(total), 0);
       if (err < 0) {
         fprintf(stderr, "Can't send data to client\n");

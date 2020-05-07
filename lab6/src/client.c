@@ -141,22 +141,21 @@ int main(int argc, char **argv) {
 
     for (i=0;i<servers_num;i++)
     {
-    struct hostent *hostname = gethostbyname(to[i].ip);
-    if (hostname == NULL) {
-      fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
-      exit(1);
-    }
-        //lib
-    struct sockaddr_in server;
-    server.sin_family = AF_INET;
-    server.sin_port = htons(to[i].port);
-    server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr);
-
+    
+    //printf("%d\n",i);
     pid_t child_pid = fork();
     if (child_pid >= 0) {
       // successful fork
       active_child_processes += 1;
         if (child_pid == 0) {
+            struct hostent *hostname = gethostbyname(to[i].ip);
+            if (hostname == NULL) {
+                fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
+                exit(1);
+            }
+
+            struct sockaddr_in server = create_sockaddr(to[i].port, *((unsigned long *)hostname->h_addr ));
+            
             int sck = socket(AF_INET, SOCK_STREAM, 0);
             if (sck < 0) {
                 fprintf(stderr, "Socket creation failed!\n");
@@ -189,7 +188,7 @@ int main(int argc, char **argv) {
             // TODO: from one server
             // unite results
             memcpy(&buf, response, sizeof(uint64_t));
-
+            //printf("%s\n",buf);
             flock(file_pipe,"LOCK_EX");
             write(file_pipe[1],buf,strlen(buf));
             flock(file_pipe,"LOCK_UN");
@@ -208,10 +207,15 @@ int main(int argc, char **argv) {
         wait(&status);
         active_child_processes -= 1;
     }
+    //printf("----------\n");
     for (i=0;i<servers_num;i++)
     {
-        read(file_pipe[0],buf,10);
-        temp=atoi(buf);
+
+        //printf("%d\n",servers_num);
+        char buf1[255];
+        read(file_pipe[0],buf1,10);
+        temp=atoi(buf1);
+        //printf("%d\n",temp);
         answer = MultModulo(temp, answer, mod);
     }
     printf("answer: %llu\n", answer);
