@@ -207,15 +207,27 @@ int main(int argc, char **argv) {
         wait(&status);
         active_child_processes -= 1;
     }
-    //printf("----------\n");
+    printf("----------\n");
+    char buf1[255];
+    read(file_pipe[0],buf1,255);
+    char buf2[servers_num][255];
+    int j=0;
+    int m=0;
+    for (i=0;i<255;i++){
+        if (j==servers_num)
+            break;
+        if(buf1[i]=='\n')
+        {j++;m=0;continue;}
+        buf2[j][m]=buf1[i];
+        m++;
+    }
     for (i=0;i<servers_num;i++)
     {
-
         //printf("%d\n",servers_num);
-        char buf1[255];
-        read(file_pipe[0],buf1,10);
-        temp=atoi(buf1);
-        //printf("%d\n",temp);
+        
+        //printf("%s\n",buf2[i]);
+        temp=atoi(buf2[i]);
+        //printf("t%d\n",temp);
         answer = MultModulo(temp, answer, mod);
     }
     printf("answer: %llu\n", answer);

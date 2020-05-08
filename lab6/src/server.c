@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
       printf("Total: %llu\n", total);
         
       char buffer[256];//sizeof(total)];
-      sprintf(buffer, "%d", total);
+      sprintf(buffer, "%d\n", total);
       //memcpy(buffer, &total, sizeof(total));
       err = send(client_fd, buffer, sizeof(total), 0);
       if (err < 0) {
